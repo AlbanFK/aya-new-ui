@@ -1,4 +1,4 @@
-import { IconFileExport, IconLogout, IconSettings } from '@tabler/icons-react';
+import { IconFileExport, IconLogout, IconSettings, IconChevronDown } from '@tabler/icons-react';
 import { signOut } from 'next-auth/react';
 import { useContext, useState } from 'react';
 
@@ -53,46 +53,58 @@ export const ChatbarSettings = () => {
     handleApiKeyChange,
   } = useContext(ChatbarContext);
 
+  const [isFooterOpen, setIsFooterOpen] = useState<boolean>(true);
+
   return (
-    <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
-      {conversations.length > 0 ? (
-        <ClearConversations onClearConversations={handleClearConversations} />
-      ) : null}
+    <>
+      <div
+        className={`fill-white hover:bg-gray-500/10 transition-colors duration-200 px-3 rounded-md cursor-pointer flex justify-center`}
+        onClick={() => setIsFooterOpen(!isFooterOpen)}
+      >
+        <IconChevronDown className={` transition-all duration-200 ${
+          isFooterOpen ? '' : 'rotate-180'
+        }`}/>
+      </div>
+      <div className={`flex flex-col items-center space-y-1  pt-1 text-sm ${isFooterOpen ? '' : 'max-h-0'}`}>
+        {conversations.length > 0 ? (
+          <ClearConversations onClearConversations={handleClearConversations} />
+        ) : null}
 
-      <Import onImport={handleImportConversations} />
+        <Import onImport={handleImportConversations} />
 
-      <SidebarButton
-        text={t('Export data')}
-        icon={<IconFileExport size={18} />}
-        onClick={() => handleExportData(database)}
-      />
-
-      <SidebarButton
-        text={t('Settings')}
-        icon={<IconSettings size={18} />}
-        onClick={() => setIsSettingDialog(true)}
-      />
-
-      {!serverSideApiKeyIsSet ? (
-        <Key apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
-      ) : null}
-
-      {!serverSidePluginKeysSet ? <PluginKeys /> : null}
-
-      {AUTH_ENABLED && (
         <SidebarButton
-          text={t('Log Out')}
-          icon={<IconLogout size={18} />}
-          onClick={handleSignOut}
+          text={t('Export data')}
+          icon={<IconFileExport size={18} />}
+          onClick={() => handleExportData(database)}
         />
-      )}
 
-      <SettingDialog
-        open={isSettingDialogOpen}
-        onClose={() => {
-          setIsSettingDialog(false);
-        }}
-      />
-    </div>
+        <SidebarButton
+          text={t('Settings')}
+          icon={<IconSettings size={18} />}
+          onClick={() => setIsSettingDialog(true)}
+        />
+
+        {!serverSideApiKeyIsSet ? (
+          <Key apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
+        ) : null}
+
+        {!serverSidePluginKeysSet ? <PluginKeys /> : null}
+
+        {AUTH_ENABLED && (
+          <SidebarButton
+            text={t('Log Out')}
+            icon={<IconLogout size={18} />}
+            onClick={handleSignOut}
+          />
+        )}
+
+        <SettingDialog
+          open={isSettingDialogOpen}
+          onClose={() => {
+            setIsSettingDialog(false);
+          }}
+        />
+      </div>
+    </>
   );
 };
